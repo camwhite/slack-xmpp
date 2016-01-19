@@ -18,7 +18,7 @@ information
   "roomJid": "<the-xmpp-room-jid", // ie. foobar@chat.baz.com
   "xmpp": {
     "jid": "<your-xmpp-jid>", // ie. bar@baz.com
-    "password": "your-xmpp-password"
+    "password": "<your-xmpp-password>"
   }
 }
 ```
