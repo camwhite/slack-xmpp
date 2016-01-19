@@ -1,10 +1,10 @@
-## Slack XMPP Client
+# Slack XMPP Client
 
 **Communicate within Slack using an external xmpp chat**
 
-====
-
 ### Setup
+
+*You will need to create a Slack bot and retrieve its token*
 
 Create a `config.json` file at the project root containing the following
 information
@@ -23,7 +23,6 @@ information
 }
 ```
 
-*You will need to create a Slack bot and retrieve its token*
 
 ### Installation & Usage
 
