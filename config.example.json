@@ -1,0 +1,11 @@
+{
+  "nickname": "botname",
+  "channel": "#channel",
+  "token": "slack-token",
+  "room": "foobar", // ie. foobar
+  "roomJid": "foobar@chat.baz.com",
+  "xmpp": {
+    "jid": "bar@baz.com",
+    "password": "your-xmpp-password"
+  }
+}
