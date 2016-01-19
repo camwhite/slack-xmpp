@@ -26,4 +26,7 @@ information
 
 ### Installation & Usage
 
-Clone this repository, include your `config.json` and run `node app`
+1. clone this repository
+2. include your `config.json`
+3. run `npm i`
+4. run `node app`
