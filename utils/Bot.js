@@ -1,6 +1,6 @@
 'use strict';
 
-const winston = require('winston');
+const chalk = require('chalk');
 const Client = require('node-xmpp-client');
 const Slack = require('slack-client');
 
@@ -59,6 +59,8 @@ class Bot {
       icon_url: parsedStanza.user != this.opts.nickname ?
         `http://api.adorable.io/avatars/48/${parsedStanza.user}.png` : undefined
     }
+
+    console.log(`${chalk.green(message.username)}: ${message.text}`)
 
     channel.postMessage(message);
   }
