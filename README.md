@@ -2,6 +2,8 @@
 
 **Communicate within Slack using an external xmpp chat**
 
+![](http://i.imgur.com/QsRj81O.png)
+
 ### Setup
 
 *You will need to [create](https://my.slack.com/services/new/bot) a Slack bot and retrieve its token*
