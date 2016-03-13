@@ -9,7 +9,9 @@ class Bot {
     this.opts = opts;
     this.slack = new Slack(opts.token);
 
-    this.slack.login();
+    this.slack.login(() => {
+      this.channel = this.slack.getChannelGroupOrDMByName(opts.channel);
+    });
   }
   connect() {
     this.client = new Client(this.opts.xmpp);
@@ -22,7 +24,10 @@ class Bot {
       setInterval(() => this.sendPresence(), 180000);
     });
     this.client.on('stanza', (stanza) => {
-      if(stanza.is('presence') && stanza.attrs.type != 'error') {
+      let jid = stanza.attrs.from;
+      let username = jid.substr(jid.indexOf( '/' ) + 1);
+
+      if(stanza.is('presence') && stanza.attrs.type != 'error' && username != 'camwhite') {
         this.sendToSlack(Bot.parsePresence(stanza));
       }
       else if(stanza.is('message') && stanza.attrs.type != 'error') {
@@ -51,8 +56,7 @@ class Bot {
     );
   }
   sendToSlack(parsedStanza) {
-    const channel = this.slack.getChannelGroupOrDMByName(this.opts.channel);
-    const message = {
+    let message = {
       text: parsedStanza.msg,
       username: parsedStanza.user,
       parse: 'full',
@@ -62,7 +66,9 @@ class Bot {
 
     console.log(`${chalk.green(message.username)}: ${message.text}`)
 
-    channel.postMessage(message);
+    if(this.channel) {
+      this.channel.postMessage(message);
+    }
   }
   static parsePresence(stanza) {
     let jid = stanza.attrs.from;
