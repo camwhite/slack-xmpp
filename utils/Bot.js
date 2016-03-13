@@ -9,9 +9,7 @@ class Bot {
     this.opts = opts;
     this.slack = new Slack(opts.token);
 
-    this.slack.login(() => {
-      this.channel = this.slack.getChannelGroupOrDMByName(opts.channel);
-    });
+    this.slack.login();
   }
   connect() {
     this.client = new Client(this.opts.xmpp);
@@ -36,6 +34,9 @@ class Bot {
     });
     this.client.on('error', (err) => {
       console.log(err);
+    });
+    this.slack.on('open', () => {
+      this.channel = this.slack.getChannelGroupOrDMByName(this.opts.channel);
     });
     this.slack.on('message', (message) => {
       if(message.subtype != 'bot_message') {
