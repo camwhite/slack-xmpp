@@ -39,7 +39,7 @@ class Bot {
       this.channel = this.slack.getChannelGroupOrDMByName(this.opts.channel);
     });
     this.slack.on('message', (message) => {
-      if(message.subtype != 'bot_message') {
+      if(message.username == 'google' || message.subtype != 'bot_message') {
         var stanza  = new Client.Stanza('message', {
           to: this.opts.roomJid,
           type: 'groupchat'
@@ -52,7 +52,7 @@ class Bot {
   sendPresence() {
     this.client.send(
       new Client.Element('presence', {
-        to: this.opts.roomJid + '/' + this.opts.room
+        to: this.opts.roomJid + '/' + this.opts.user
       })
     );
   }
