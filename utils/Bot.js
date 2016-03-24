@@ -3,13 +3,16 @@
 const chalk = require('chalk');
 const Client = require('node-xmpp-client');
 const Slack = require('slack-client');
+const Raffle = require('./Raffle');
 
 class Bot {
   constructor(opts) {
     this.opts = opts;
-    this.slack = new Slack(opts.token);
 
+    this.slack = new Slack(opts.token);
     this.slack.login();
+
+    this.raffle = new Raffle();
   }
   connect() {
     this.client = new Client(this.opts.xmpp);
@@ -22,14 +25,27 @@ class Bot {
       setInterval(() => this.sendPresence(), 180000);
     });
     this.client.on('stanza', (stanza) => {
-      let jid = stanza.attrs.from;
-      let username = jid.substr(jid.indexOf( '/' ) + 1);
+      if(stanza.is('presence') && stanza.attrs.type != 'error') {
+        let parsedPresence = Bot.parsePresence(stanza);
+        let user = parsedPresence.user;
 
-      if(stanza.is('presence') && stanza.attrs.type != 'error' && username != 'camwhite') {
-        this.sendToSlack(Bot.parsePresence(stanza));
+        if(user != 'camwhite' && parsedPresence.msg != 'unavailable') {
+          this.sendToSlack(parsedPresence);
+          this.sendMessage(this.raffle.notification(user));
+        }
       }
       else if(stanza.is('message') && stanza.attrs.type != 'error') {
-        this.sendToSlack(Bot.parseMessage(stanza));
+        let parsedMessage = Bot.parseMessage(stanza);
+        let user = parsedMessage.user;
+
+        this.sendToSlack(parsedMessage);
+
+        if(/^!enter$/.test(parsedMessage.msg)) {
+          this.sendMessage(this.raffle.handleEntry(user));
+        }
+        if(/^!draw$/.test(parsedMessage.msg) && user == 'camwhite') {
+          this.sendMessage(this.raffle.handleDrawing());
+        }
       }
     });
     this.client.on('error', (err) => {
@@ -40,13 +56,9 @@ class Bot {
     });
     this.slack.on('message', (message) => {
       if(message.username == 'google' || message.subtype != 'bot_message') {
-        var stanza  = new Client.Stanza('message', {
-          to: this.opts.roomJid,
-          type: 'groupchat'
-        })
-        .c('body').t(message.text);
-        this.client.send(stanza);
+        this.sendMessage(message.text);
       }
+
     });
   }
   sendPresence() {
@@ -55,6 +67,15 @@ class Bot {
         to: this.opts.roomJid + '/' + this.opts.user
       })
     );
+  }
+  sendMessage(message) {
+    let stanza  = new Client.Stanza('message', {
+      to: this.opts.roomJid,
+      type: 'groupchat'
+    })
+    .c('body').t(message);
+
+    this.client.send(stanza);
   }
   sendToSlack(parsedStanza) {
     let message = {

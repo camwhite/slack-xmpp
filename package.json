@@ -13,6 +13,7 @@
   "dependencies": {
     "chalk": "^1.1.1",
     "lodash": "^3.10.1",
+    "node-persist": "0.0.10",
     "node-xmpp-client": "^3.0.0",
     "slack-client": "^1.5.1"
   }
