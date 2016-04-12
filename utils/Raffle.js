@@ -18,8 +18,8 @@ class Raffle {
       }
     });
   }
-  notification(user) {
-    return `Welcome @${user}, there's a giveaway going on! Type !enter in chat to be added to the raffle :monocle:`;
+  notification() {
+    return `Hey kiddos there's a giveaway going on! Type !enter in chat to be added to the raffle :monocle:`;
   }
   handleEntry(user) {
     for(let entrant of this.pool) {

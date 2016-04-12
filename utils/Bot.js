@@ -23,28 +23,31 @@ class Bot {
       this.sendPresence();
 
       setInterval(() => this.sendPresence(), 180000);
+      setInterval(() => this.sendMessage(this.raffle.notification()), 600000);
     });
     this.client.on('stanza', (stanza) => {
       if(stanza.is('presence') && stanza.attrs.type != 'error') {
         let parsedPresence = Bot.parsePresence(stanza);
         let user = parsedPresence.user;
 
-        if(user != 'camwhite' && parsedPresence.msg != 'unavailable') {
+        if(user != this.opts.user) {
           this.sendToSlack(parsedPresence);
-          this.sendMessage(this.raffle.notification(user));
         }
       }
       else if(stanza.is('message') && stanza.attrs.type != 'error') {
         let parsedMessage = Bot.parseMessage(stanza);
         let user = parsedMessage.user;
 
-        this.sendToSlack(parsedMessage);
-
+        // Raffle regexs
         if(/^!enter$/.test(parsedMessage.msg)) {
           this.sendMessage(this.raffle.handleEntry(user));
         }
-        if(/^!draw$/.test(parsedMessage.msg) && user == 'camwhite') {
+        if(/^!draw$/.test(parsedMessage.msg) && this.opts.user) {
           this.sendMessage(this.raffle.handleDrawing());
+        }
+
+        if(user != this.opts.user) {
+          this.sendToSlack(parsedMessage);
         }
       }
     });
@@ -58,7 +61,6 @@ class Bot {
       if(message.username == 'google' || message.subtype != 'bot_message') {
         this.sendMessage(message.text);
       }
-
     });
   }
   sendPresence() {
@@ -69,6 +71,8 @@ class Bot {
     );
   }
   sendMessage(message) {
+    console.log(`${chalk.green(this.opts.user)}: ${message}`)
+
     let stanza  = new Client.Stanza('message', {
       to: this.opts.roomJid,
       type: 'groupchat'
