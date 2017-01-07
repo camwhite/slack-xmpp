@@ -2,7 +2,7 @@
 
 **Communicate within Slack using an external xmpp chat**
 
-![](http://i.imgur.com/QsRj81O.png)
+![](https://i.imgur.com/QsRj81O.png)
 
 ### Setup
 
